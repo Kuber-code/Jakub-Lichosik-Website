@@ -23,9 +23,10 @@ const links = [
   {
     icon: Link2,
     label: "LinkedIn",
-    value: "Coming soon",
+    value: "jakublichosik",
     href: personal.linkedin,
     color: "var(--accent-teal)",
+    external: true,
   },
   {
     icon: Download,

@@ -93,7 +93,6 @@ export const projects: Project[] = [
     metrics: ["PO/PM ownership of language roadmap", "Marketing and community development"],
     visibility: "public",
     featured: true,
-    // needsApproval: true
   },
   {
     id: "ipi-io",
@@ -107,7 +106,6 @@ export const projects: Project[] = [
     metrics: ["Multi-role contribution: Scrum + DevOps + Dev", "Cross-functional collaboration"],
     visibility: "public",
     featured: false,
-    // needsApproval: true
   },
   {
     id: "github-placeholder-1",

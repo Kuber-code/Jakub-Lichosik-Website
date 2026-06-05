@@ -9,7 +9,7 @@ export const personal = {
   switzerlandNote: "5 years living & working in Switzerland · last 2 years as freelancer",
   email: "kuba.lichosik@gmail.com",
   github: "https://github.com/Kuber-code",
-  linkedin: "#", // TODO: add LinkedIn URL
+  linkedin: "https://www.linkedin.com/in/jakublichosik/",
   cvUrl: "/Jakub_Lichosik_CV.pdf",
   languages: [
     { name: "Polish", level: "Native", code: "PL", percent: 100 },

@@ -12,7 +12,7 @@ const roles = [
       "Driving the roadmap and community for an emerging programming language. Managing backlog, stakeholder communication and growth strategy.",
     icons: [Code2, Users],
     color: "var(--accent-purple)",
-    note: "owner-provided — details to be confirmed",
+    note: null,
   },
   {
     org: "IPI.io",
@@ -22,7 +22,7 @@ const roles = [
       "Multi-role contribution in an open collaborative environment — facilitating agile process, maintaining infrastructure and contributing code.",
     icons: [GitBranch, Users, Code2],
     color: "var(--accent-cyan)",
-    note: "owner-provided — details to be confirmed",
+    note: null,
   },
   {
     org: "BEST Gliwice (Board of European Students of Technology)",
