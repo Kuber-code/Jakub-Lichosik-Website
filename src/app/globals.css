@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-green: var(--accent-green);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-pink: var(--accent-pink);
+  --color-accent-teal: var(--accent-teal);
+  --color-card: var(--bg-secondary);
+  --color-border: var(--border-color);
+  --color-muted: var(--text-muted);
+}
+
+:root {
+  /* Dark mode is default */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111118;
+  --bg-hover: #1a1a2e;
+  --text-primary: #e8e8f0;
+  --text-muted: #6b7280;
+  --text-subtle: #4b5563;
+  --accent-cyan: #00d4ff;
+  --accent-purple: #7c3aed;
+  --accent-green: #10b981;
+  --accent-orange: #f59e0b;
+  --accent-pink: #ec4899;
+  --accent-teal: #14b8a6;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --glow-cyan: rgba(0, 212, 255, 0.15);
+  --glow-purple: rgba(124, 58, 237, 0.15);
+  --scrollbar-thumb: #1e1e2e;
+  --scrollbar-track: #0a0a0f;
+}
+
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-hover: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+  --accent-cyan: #0ea5e9;
+  --accent-purple: #7c3aed;
+  --accent-green: #059669;
+  --accent-orange: #d97706;
+  --accent-pink: #db2777;
+  --accent-teal: #0d9488;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --glow-cyan: rgba(14, 165, 233, 0.1);
+  --glow-purple: rgba(124, 58, 237, 0.1);
+  --scrollbar-thumb: #e2e8f0;
+  --scrollbar-track: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
