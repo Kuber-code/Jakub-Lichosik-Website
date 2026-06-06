@@ -44,10 +44,11 @@ interface FormData {
   name: string;
   email: string;
   message: string;
+  website: string;
 }
 
 function ContactForm() {
-  const [form, setForm] = useState<FormData>({ name: "", email: "", message: "" });
+  const [form, setForm] = useState<FormData>({ name: "", email: "", message: "", website: "" });
   const [state, setState] = useState<FormState>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -72,7 +73,7 @@ function ContactForm() {
         setState("error");
       } else {
         setState("success");
-        setForm({ name: "", email: "", message: "" });
+        setForm({ name: "", email: "", message: "", website: "" });
       }
     } catch {
       setErrorMsg("Network error — please try again.");
@@ -137,6 +138,16 @@ function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <input
+        type="text"
+        name="website"
+        value={form.website}
+        onChange={handleChange}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", opacity: 0, pointerEvents: "none" }}
+      />
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="cf-name" style={labelStyle}>Name</label>

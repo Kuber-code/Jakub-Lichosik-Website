@@ -38,10 +38,10 @@ export const metadata: Metadata = {
     "Switzerland",
   ],
   authors: [{ name: "Jakub Lichosik", url: "https://github.com/Kuber-code" }],
-  metadataBase: new URL("https://jakub-lichosik-website.vercel.app"),
+  metadataBase: new URL("https://lichosik.dev"),
   openGraph: {
     type: "website",
-    url: "https://jakub-lichosik-website.vercel.app",
+    url: "https://lichosik.dev",
     title: "Jakub Lichosik — Software Engineer · DevOps / SRE",
     description: "Software engineer who codes, deploys and drives process. 4+ years in IT, 3 years Banking & HFT, PSPO I certified.",
     siteName: "Jakub Lichosik",

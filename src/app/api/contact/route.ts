@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, message } = body as { name?: string; email?: string; message?: string };
+    const { name, email, message, website } = body as { name?: string; email?: string; message?: string; website?: string };
+
+    if (website) {
+      return NextResponse.json({ ok: true });
+    }
 
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });

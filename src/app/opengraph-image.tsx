@@ -44,7 +44,7 @@ export default function OGImage() {
             fontFamily: "monospace",
           }}
         >
-          jakublichosik.com
+          lichosik.dev
         </div>
 
         {/* Name */}
