@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, GitFork, Download, Link2, ArrowUpRight } from "lucide-react";
+import { Mail, GitFork, Download, Link2, ArrowUpRight, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { personal } from "@/data/personal";
 
 const links = [
@@ -36,6 +37,186 @@ const links = [
     color: "var(--accent-green)",
   },
 ];
+
+type FormState = "idle" | "submitting" | "success" | "error";
+
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+function ContactForm() {
+  const [form, setForm] = useState<FormData>({ name: "", email: "", message: "" });
+  const [state, setState] = useState<FormState>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setState("submitting");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error ?? "Something went wrong.");
+        setState("error");
+      } else {
+        setState("success");
+        setForm({ name: "", email: "", message: "" });
+      }
+    } catch {
+      setErrorMsg("Network error — please try again.");
+      setState("error");
+    }
+  };
+
+  if (state === "success") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex flex-col items-center justify-center gap-4 py-12 text-center"
+      >
+        <CheckCircle size={40} style={{ color: "var(--accent-green)" }} />
+        <h3 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+          Message sent!
+        </h3>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          Thanks — I&apos;ll get back to you soon.
+        </p>
+        <button
+          onClick={() => setState("idle")}
+          className="text-xs font-mono underline mt-2"
+          style={{ color: "var(--text-subtle)" }}
+        >
+          Send another
+        </button>
+      </motion.div>
+    );
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "10px 14px",
+    borderRadius: "10px",
+    border: "1px solid var(--border-color)",
+    backgroundColor: "var(--bg-primary)",
+    color: "var(--text-primary)",
+    fontSize: "14px",
+    outline: "none",
+    transition: "border-color 0.2s ease",
+    fontFamily: "inherit",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: "block",
+    fontSize: "11px",
+    fontFamily: "var(--font-jetbrains), monospace",
+    textTransform: "uppercase",
+    letterSpacing: "0.1em",
+    color: "var(--text-muted)",
+    marginBottom: "6px",
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderColor = "var(--accent-cyan)";
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderColor = "var(--border-color)";
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="cf-name" style={labelStyle}>Name</label>
+          <input
+            id="cf-name"
+            name="name"
+            type="text"
+            required
+            placeholder="Your name"
+            value={form.name}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            style={inputStyle}
+          />
+        </div>
+        <div>
+          <label htmlFor="cf-email" style={labelStyle}>Email</label>
+          <input
+            id="cf-email"
+            name="email"
+            type="email"
+            required
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            style={inputStyle}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="cf-message" style={labelStyle}>Message</label>
+        <textarea
+          id="cf-message"
+          name="message"
+          required
+          rows={5}
+          placeholder="What are you working on?"
+          value={form.message}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          style={{ ...inputStyle, resize: "vertical", minHeight: "120px" }}
+        />
+      </div>
+
+      {state === "error" && (
+        <div
+          className="flex items-center gap-2 text-sm p-3 rounded-lg"
+          style={{
+            color: "var(--accent-orange)",
+            backgroundColor: "rgba(245,158,11,0.08)",
+            border: "1px solid rgba(245,158,11,0.2)",
+          }}
+        >
+          <AlertCircle size={14} />
+          {errorMsg}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={state === "submitting"}
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200"
+        style={{
+          backgroundColor: state === "submitting" ? "var(--border-strong)" : "var(--accent-cyan)",
+          color: state === "submitting" ? "var(--text-muted)" : "#0a0a0f",
+          cursor: state === "submitting" ? "not-allowed" : "pointer",
+          border: "none",
+        }}
+      >
+        <Send size={15} />
+        {state === "submitting" ? "Sending…" : "Send message"}
+      </button>
+    </form>
+  );
+}
 
 export function Contact() {
   return (
@@ -119,6 +300,24 @@ export function Contact() {
             </motion.a>
           ))}
         </div>
+
+        {/* Contact form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="rounded-2xl p-6 md:p-8 mb-12"
+          style={{
+            backgroundColor: "var(--bg-primary)",
+            border: "1px solid var(--border-color)",
+          }}
+        >
+          <h3 className="text-lg font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+            Send a message
+          </h3>
+          <ContactForm />
+        </motion.div>
 
         {/* Footer */}
         <motion.div
