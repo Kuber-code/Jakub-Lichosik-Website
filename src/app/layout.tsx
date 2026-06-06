@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const inter = Inter({
@@ -36,8 +37,10 @@ export const metadata: Metadata = {
     "Switzerland",
   ],
   authors: [{ name: "Jakub Lichosik", url: "https://github.com/Kuber-code" }],
+  metadataBase: new URL("https://jakub-lichosik-website.vercel.app"),
   openGraph: {
     type: "website",
+    url: "https://jakub-lichosik-website.vercel.app",
     title: "Jakub Lichosik — Software Engineer · DevOps / SRE",
     description: "Software engineer who codes, deploys and drives process. 4+ years in IT, 3 years Banking & HFT, PSPO I certified.",
     siteName: "Jakub Lichosik",
@@ -54,6 +57,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen antialiased font-[family-name:var(--font-inter)]">
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
