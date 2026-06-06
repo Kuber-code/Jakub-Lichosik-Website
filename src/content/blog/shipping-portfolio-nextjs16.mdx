@@ -1,0 +1,65 @@
+---
+title: "Shipping a Portfolio in a Weekend with Next.js 16 and Framer Motion"
+date: "2026-06-06"
+summary: "The technical decisions behind this portfolio — from stack selection to scroll animations to the GitHub API integration that keeps the projects section always current."
+tags: ["nextjs", "typescript", "framer-motion", "tailwind", "web"]
+---
+
+Every engineer eventually needs a portfolio. I kept putting it off because most portfolio templates feel generic — the same hero section, the same card grid, the same timeline component. I wanted something that felt like a terminal and a product at the same time.
+
+Here's what I ended up with and why.
+
+## Stack decisions
+
+**Next.js 16 App Router** was the obvious choice. Server Components mean the GitHub API integration is trivial — just `await fetch()` in an `async` page component with `next: { revalidate: 3600 }`. No client-side loading states, no useEffect.
+
+**Tailwind CSS v4** uses a CSS-first config (`@theme inline`) rather than a JS config file. It took about an hour to adjust to — the way design tokens work changed significantly. But the output is cleaner.
+
+**Framer Motion 12** is my favourite frontend library for the kind of animations that make a portfolio feel alive without being distracting. `useScroll` + `useTransform` for the progress bar, `useInView` for the skill bars, `AnimatePresence` for the experience accordion.
+
+## The skill bar bug
+
+While building the skill bars, I hit a subtle CSS gotcha. I was using CSS custom properties for colors and tried to append hex alpha codes:
+
+```ts
+background: `linear-gradient(90deg, ${color}aa, ${color})`
+// produces: linear-gradient(90deg, var(--accent-cyan)aa, var(--accent-cyan))
+```
+
+That's invalid CSS — you can't suffix a `var()` reference with a hex alpha code. The fix is `color-mix()`:
+
+```ts
+background: `linear-gradient(90deg, color-mix(in srgb, ${color} 55%, transparent), ${color})`
+```
+
+This is the modern CSS way to add transparency to a CSS variable color. Browser support is good across all evergreen browsers.
+
+## The matrix rain
+
+The hero has a matrix rain effect. I started with `01` binary characters, which looked too generic. Switched to a mix of Japanese katakana and digits — it reads as "tech" without being cliché binary. Implemented with `useEffect` + `requestAnimationFrame` on a `<canvas>` element.
+
+## GitHub API integration
+
+The projects section auto-fetches my public repos from the GitHub REST API:
+
+```ts
+export async function fetchPublicRepos(username: string): Promise<GitHubRepo[]> {
+  const res = await fetch(
+    `https://api.github.com/users/${username}/repos?sort=updated&per_page=12&type=public`,
+    { next: { revalidate: 3600 } }
+  );
+  if (!res.ok) return [];
+  const data: GitHubRepo[] = await res.json();
+  return data.filter((r) => !r.fork).slice(0, 6);
+}
+```
+
+Called in the `async` page component, passed as prop to the Projects client component. Cache revalidates every hour so the section stays current without rebuilding.
+
+## What I'd do differently
+
+- **More content** — the skill bars are visual guesses, not data from anywhere. A YAML-driven content model would be cleaner.
+- **Proper blog from day one** — setting up MDX after the fact required more wiring than if I'd planned it upfront.
+- **Testing the dark/light contrast** more carefully — some light-mode colors needed a second pass.
+
+The site is live at [jakub-lichosik-website.vercel.app](https://jakub-lichosik-website.vercel.app). Source is on GitHub.

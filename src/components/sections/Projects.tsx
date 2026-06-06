@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { GitFork, ExternalLink, Lock, Clock, AlertCircle } from "lucide-react";
+import { GitFork, ExternalLink, Lock, Clock, AlertCircle, Star, ArrowRight } from "lucide-react";
 import { projects, type ProjectStatus } from "@/data/projects";
+import type { GitHubRepo } from "@/lib/github";
 
 const statusConfig: Record<ProjectStatus, { label: string; color: string; icon: React.ReactNode }> = {
   public: { label: "Public", color: "var(--accent-green)", icon: <GitFork size={12} /> },
@@ -15,6 +16,7 @@ const statusConfig: Record<ProjectStatus, { label: string; color: string; icon: 
 
 function ProjectCard({ project }: { project: (typeof projects)[0] }) {
   const status = statusConfig[project.status];
+  const hasCaseStudy = !!(project.problem && project.solution);
 
   return (
     <motion.article
@@ -29,21 +31,19 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
       onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--border-strong)")}
       onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border-color)")}
     >
-      {/* Status badge */}
+      {/* Status badge + links row */}
       <div className="flex items-center justify-between">
         <span
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono"
           style={{
             color: status.color,
-            backgroundColor: `${status.color}18`,
-            border: `1px solid ${status.color}33`,
+            backgroundColor: `color-mix(in srgb, ${status.color} 9%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${status.color} 20%, transparent)`,
           }}
         >
           {status.icon}
           {status.label}
         </span>
-
-        {/* Links */}
         <div className="flex gap-2">
           {project.repoUrl && project.status !== "private" && project.status !== "nda" && (
             <a
@@ -102,11 +102,76 @@ function ProjectCard({ project }: { project: (typeof projects)[0] }) {
           ))}
         </div>
       )}
+
+      {/* Case study link */}
+      {hasCaseStudy && (
+        <Link
+          href={`/projects/${project.id}`}
+          className="inline-flex items-center gap-1.5 text-xs font-medium transition-colors duration-150"
+          style={{ color: "var(--accent-cyan)" }}
+        >
+          Read case study
+          <ArrowRight size={12} />
+        </Link>
+      )}
     </motion.article>
   );
 }
 
-export function Projects() {
+function GitHubCard({ repo }: { repo: GitHubRepo }) {
+  return (
+    <motion.a
+      href={repo.html_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ y: -3, scale: 1.01 }}
+      transition={{ duration: 0.2 }}
+      className="relative rounded-xl flex flex-col gap-3 p-4 h-full"
+      style={{
+        backgroundColor: "var(--bg-primary)",
+        border: "1px solid var(--border-color)",
+        transition: "border-color 0.2s ease",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--border-strong)")}
+      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border-color)")}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <span className="font-mono text-sm font-semibold truncate" style={{ color: "var(--accent-cyan)" }}>
+          {repo.name}
+        </span>
+        {repo.stargazers_count > 0 && (
+          <span className="inline-flex items-center gap-1 text-xs flex-shrink-0" style={{ color: "var(--text-muted)" }}>
+            <Star size={11} />
+            {repo.stargazers_count}
+          </span>
+        )}
+      </div>
+      {repo.description && (
+        <p className="text-xs leading-relaxed flex-1" style={{ color: "var(--text-muted)" }}>
+          {repo.description}
+        </p>
+      )}
+      {repo.language && (
+        <span
+          className="text-xs font-mono self-start px-2 py-0.5 rounded"
+          style={{
+            color: "var(--accent-purple)",
+            backgroundColor: "color-mix(in srgb, var(--accent-purple) 7%, transparent)",
+            border: "1px solid color-mix(in srgb, var(--accent-purple) 15%, transparent)",
+          }}
+        >
+          {repo.language}
+        </span>
+      )}
+    </motion.a>
+  );
+}
+
+interface ProjectsProps {
+  githubRepos?: GitHubRepo[];
+}
+
+export function Projects({ githubRepos = [] }: ProjectsProps) {
   const featured = projects.filter((p) => p.featured && p.visibility === "public");
   const rest = projects.filter((p) => !p.featured && p.visibility === "public");
 
@@ -141,7 +206,7 @@ export function Projects() {
           </a>
         </motion.div>
 
-        {/* Bento grid — featured */}
+        {/* Featured bento grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           {featured.map((project, i) => (
             <motion.div
@@ -159,7 +224,7 @@ export function Projects() {
 
         {/* Non-featured */}
         {rest.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
             {rest.map((project, i) => (
               <motion.div
                 key={project.id}
@@ -172,6 +237,45 @@ export function Projects() {
               </motion.div>
             ))}
           </div>
+        )}
+
+        {/* GitHub activity — auto-fetched */}
+        {githubRepos.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-mono uppercase tracking-widest" style={{ color: "var(--text-subtle)" }}>
+                Recent GitHub activity
+              </h3>
+              <a
+                href="https://github.com/Kuber-code"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs inline-flex items-center gap-1 transition-colors duration-150"
+                style={{ color: "var(--text-muted)" }}
+              >
+                See all
+                <ArrowRight size={11} />
+              </a>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {githubRepos.map((repo, i) => (
+                <motion.div
+                  key={repo.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                >
+                  <GitHubCard repo={repo} />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         )}
       </div>
     </section>

@@ -1,0 +1,58 @@
+---
+title: "Building Observability for HFT Infrastructure from Scratch"
+date: "2026-05-12"
+summary: "How I designed and shipped a full Grafana + Prometheus + Loki stack for a crypto market-making company — with zero existing monitoring in place."
+tags: ["devops", "observability", "grafana", "prometheus", "hft"]
+---
+
+When I joined Portofino Technologies in Zug, the trading infrastructure was running blind. There were no dashboards, no alerts, and no centralized logs. For a company running 24/7 automated market-making strategies across crypto exchanges, that meant any outage was discovered by traders — not operations.
+
+## The Challenge
+
+HFT infrastructure has unique observability requirements:
+
+- **Sub-millisecond timing** — latency spikes matter at microsecond granularity
+- **High cardinality** — hundreds of trading pairs, dozens of exchange connections
+- **No downtime tolerance** — monitoring the monitor is as important as monitoring the system
+- **PII-free alerting** — trade data is sensitive; alert payloads must be carefully designed
+
+## The Stack
+
+I chose the LGTM-adjacent open-source stack:
+
+```
+Metrics:  Prometheus → Grafana
+Logs:     Promtail → Loki → Grafana
+Storage:  MongoDB (for trading state snapshots)
+Infra:    AWS EKS (Kubernetes)
+Alerts:   Grafana Alerting → Slack / PagerDuty
+```
+
+This gave us a single Grafana pane of glass for both metrics and logs — critical for correlating a latency spike with the log event that caused it.
+
+## What I Built
+
+### 1. Custom alert rules
+
+I wrote Prometheus alert rules covering:
+- Exchange connectivity drops (critical — affects live trading)
+- Order rejection rates above threshold
+- Infra-level: CPU, memory, pod restarts
+- Trading-level: position drift, fill rate anomalies
+
+### 2. Log pipeline
+
+Promtail deployed as a DaemonSet on EKS, shipping structured JSON logs from all trading services into Loki. I built Grafana LogQL dashboards to filter by exchange, strategy, and severity.
+
+### 3. Notification pipeline
+
+Alerts routed through Grafana contact points to Slack (non-critical) and PagerDuty (critical). On-call rotation was established for the first time.
+
+## Outcome
+
+Within three months of go-live:
+- Two silent outages detected before traders noticed
+- Mean-time-to-detect dropped from "someone noticed" to under 90 seconds
+- Engineering had visibility into infrastructure health for the first time
+
+The hardest part wasn't the tooling — it was writing alert rules that were *actionable*, not just noisy. Every alert needs an owner and a runbook. Without that, you just trade blind noise for loud noise.

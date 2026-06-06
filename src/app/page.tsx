@@ -9,8 +9,11 @@ import { ExtraRoles } from "@/components/sections/ExtraRoles";
 import { Languages } from "@/components/sections/Languages";
 import { Interests } from "@/components/sections/Interests";
 import { Contact } from "@/components/sections/Contact";
+import { fetchPublicRepos } from "@/lib/github";
 
-export default function Home() {
+export default async function Home() {
+  const githubRepos = await fetchPublicRepos("Kuber-code");
+
   return (
     <>
       <Navbar />
@@ -20,7 +23,7 @@ export default function Home() {
         <About />
         <Skills />
         <Timeline />
-        <Projects />
+        <Projects githubRepos={githubRepos} />
         <ExtraRoles />
         <Languages />
         <Interests />

@@ -48,7 +48,7 @@ function SkillBar({ label, percent, description, color }: { label: string; perce
           animate={inView ? { width: `${percent}%` } : { width: 0 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           style={{
-            background: `linear-gradient(90deg, ${colors.bar}aa, ${colors.bar})`,
+            background: `linear-gradient(90deg, color-mix(in srgb, ${colors.bar} 55%, transparent), ${colors.bar})`,
             boxShadow: `0 0 12px ${colors.glow}`,
           }}
         />
@@ -140,9 +140,9 @@ export function Skills() {
                       whileHover={{ scale: 1.05, y: -2 }}
                       className="px-3 py-1 rounded-lg text-xs font-mono font-medium cursor-default"
                       style={{
-                        border: `1px solid ${categoryColors[badge.category]}33`,
+                        border: `1px solid color-mix(in srgb, ${categoryColors[badge.category]} 20%, transparent)`,
                         color: categoryColors[badge.category],
-                        backgroundColor: `${categoryColors[badge.category]}11`,
+                        backgroundColor: `color-mix(in srgb, ${categoryColors[badge.category]} 7%, transparent)`,
                       }}
                     >
                       {badge.name}

@@ -90,6 +90,83 @@ body {
   border-radius: 3px;
 }
 
+.prose-blog {
+  color: var(--text-primary);
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+.prose-blog h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.prose-blog h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.prose-blog p {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  color: var(--text-muted);
+}
+
+.prose-blog a {
+  color: var(--accent-cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-blog ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+  list-style: disc;
+}
+
+.prose-blog li {
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.prose-blog code {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 0.875em;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+  color: var(--accent-cyan);
+}
+
+.prose-blog pre {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.prose-blog pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.prose-blog strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
@@ -56,6 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen antialiased font-[family-name:var(--font-inter)]">
+        <ScrollProgress />
         <Providers>{children}</Providers>
         <Analytics />
       </body>
