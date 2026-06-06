@@ -1,9 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const MAX_FIELD_LENGTH = 5000;
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, message, website } = body as { name?: string; email?: string; message?: string; website?: string };
+    const { name, email, message, website } = body as {
+      name?: string;
+      email?: string;
+      message?: string;
+      website?: string;
+    };
 
     if (website) {
       return NextResponse.json({ ok: true });
@@ -11,6 +27,10 @@ export async function POST(req: NextRequest) {
 
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+    }
+
+    if (name.length > MAX_FIELD_LENGTH || email.length > 320 || message.length > MAX_FIELD_LENGTH) {
+      return NextResponse.json({ error: "Field too long." }, { status: 400 });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,18 +45,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    const safeName = escapeHtml(name.trim());
+    const safeEmail = escapeHtml(email.trim());
+    const safeMessage = escapeHtml(message.trim()).replace(/\n/g, "<br>");
+
     const { Resend } = await import("resend");
     const resend = new Resend(apiKey);
 
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
       to: "kuba.lichosik@gmail.com",
-      replyTo: email,
-      subject: `Portfolio contact: ${name}`,
+      replyTo: email.trim(),
+      subject: `Portfolio contact: ${safeName}`,
       html: `
-        <p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
+        <p><strong>From:</strong> ${safeName} &lt;${safeEmail}&gt;</p>
         <hr>
-        <p>${message.replace(/\n/g, "<br>")}</p>
+        <p>${safeMessage}</p>
       `,
     });
 
