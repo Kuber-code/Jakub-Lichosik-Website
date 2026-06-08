@@ -4,7 +4,47 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, GitFork, Download, Link2, ArrowUpRight, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { personal } from "@/data/personal";
-import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import Script from "next/script";
+
+declare global {
+  interface Window {
+    grecaptcha: {
+      enterprise: {
+        ready: (cb: () => void) => void;
+        execute: (siteKey: string, options: { action: string }) => Promise<string>;
+      };
+    };
+  }
+}
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
+async function getEnterpriseToken(action: string): Promise<string> {
+  if (!RECAPTCHA_SITE_KEY || typeof window === "undefined") return "";
+  return new Promise((resolve) => {
+    const run = () => {
+      window.grecaptcha.enterprise.ready(async () => {
+        try {
+          const token = await window.grecaptcha.enterprise.execute(RECAPTCHA_SITE_KEY, { action });
+          resolve(token);
+        } catch {
+          resolve("");
+        }
+      });
+    };
+    if (window.grecaptcha?.enterprise) {
+      run();
+    } else {
+      const interval = setInterval(() => {
+        if (window.grecaptcha?.enterprise) {
+          clearInterval(interval);
+          run();
+        }
+      }, 100);
+      setTimeout(() => { clearInterval(interval); resolve(""); }, 5000);
+    }
+  });
+}
 
 const links = [
   {
@@ -48,8 +88,7 @@ interface FormData {
   website: string;
 }
 
-function ContactFormCore() {
-  const { executeRecaptcha } = useGoogleReCaptcha();
+function ContactForm() {
   const [form, setForm] = useState<FormData>({ name: "", email: "", message: "", website: "" });
   const [state, setState] = useState<FormState>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -63,14 +102,7 @@ function ContactFormCore() {
     setState("submitting");
     setErrorMsg("");
 
-    let recaptchaToken: string | undefined;
-    if (executeRecaptcha) {
-      try {
-        recaptchaToken = await executeRecaptcha("contact_form");
-      } catch {
-        // proceed without token if reCAPTCHA fails
-      }
-    }
+    const recaptchaToken = await getEnterpriseToken("contact_form");
 
     try {
       const res = await fetch("/api/contact", {
@@ -237,44 +269,20 @@ function ContactFormCore() {
           <Send size={15} />
           {state === "submitting" ? "Sending…" : "Send message"}
         </button>
-        {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+        {RECAPTCHA_SITE_KEY && (
           <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
             Protected by reCAPTCHA —{" "}
-            <a
-              href="https://policies.google.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "var(--text-muted)" }}
-            >
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>
               Privacy
             </a>{" "}
             &{" "}
-            <a
-              href="https://policies.google.com/terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "var(--text-muted)" }}
-            >
+            <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>
               Terms
             </a>
           </p>
         )}
       </div>
     </form>
-  );
-}
-
-function ContactForm() {
-  const captchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-
-  if (!captchaKey) {
-    return <ContactFormCore />;
-  }
-
-  return (
-    <GoogleReCaptchaProvider reCaptchaKey={captchaKey} language="en">
-      <ContactFormCore />
-    </GoogleReCaptchaProvider>
   );
 }
 
@@ -285,6 +293,13 @@ export function Contact() {
       className="py-24 px-6 relative overflow-hidden"
       style={{ backgroundColor: "var(--bg-secondary)" }}
     >
+      {RECAPTCHA_SITE_KEY && (
+        <Script
+          src={`https://www.google.com/recaptcha/enterprise.js?render=${RECAPTCHA_SITE_KEY}`}
+          strategy="afterInteractive"
+        />
+      )}
+
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
