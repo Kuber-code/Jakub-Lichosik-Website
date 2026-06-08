@@ -28,7 +28,7 @@ export const personal = {
     { label: "Technology", icon: "Cpu" },
   ],
   proofStrip: [
-    { value: "4+", label: "Years in IT" },
+    { value: "6+", label: "Years in IT" },
     { value: "3", label: "Years Banking & HFT" },
     { value: "8", label: "Years Total Experience" },
     { value: "PSPO I", label: "Scrum Certified" },
