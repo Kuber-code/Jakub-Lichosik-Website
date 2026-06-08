@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const MAX_FIELD_LENGTH = 5000;
+const RECAPTCHA_MIN_SCORE = 0.5;
 
 function escapeHtml(str: string): string {
   return str
@@ -11,14 +12,27 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
+async function verifyRecaptcha(token: string, secretKey: string): Promise<boolean> {
+  const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
+  });
+  const data = (await res.json()) as { success: boolean; score?: number; "error-codes"?: string[] };
+  if (!data.success) return false;
+  if (typeof data.score === "number" && data.score < RECAPTCHA_MIN_SCORE) return false;
+  return true;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, message, website } = body as {
+    const { name, email, message, website, recaptchaToken } = body as {
       name?: string;
       email?: string;
       message?: string;
       website?: string;
+      recaptchaToken?: string;
     };
 
     if (website) {
@@ -36,6 +50,17 @@ export async function POST(req: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
+    }
+
+    const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+    if (recaptchaSecret) {
+      if (!recaptchaToken) {
+        return NextResponse.json({ error: "reCAPTCHA verification required." }, { status: 400 });
+      }
+      const passed = await verifyRecaptcha(recaptchaToken, recaptchaSecret);
+      if (!passed) {
+        return NextResponse.json({ error: "reCAPTCHA check failed. Please try again." }, { status: 400 });
+      }
     }
 
     const apiKey = process.env.RESEND_API_KEY;

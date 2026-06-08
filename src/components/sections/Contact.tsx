@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, GitFork, Download, Link2, ArrowUpRight, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { personal } from "@/data/personal";
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 const links = [
   {
@@ -47,7 +48,8 @@ interface FormData {
   website: string;
 }
 
-function ContactForm() {
+function ContactFormCore() {
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const [form, setForm] = useState<FormData>({ name: "", email: "", message: "", website: "" });
   const [state, setState] = useState<FormState>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -61,11 +63,20 @@ function ContactForm() {
     setState("submitting");
     setErrorMsg("");
 
+    let recaptchaToken: string | undefined;
+    if (executeRecaptcha) {
+      try {
+        recaptchaToken = await executeRecaptcha("contact_form");
+      } catch {
+        // proceed without token if reCAPTCHA fails
+      }
+    }
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, recaptchaToken }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -211,21 +222,59 @@ function ContactForm() {
         </div>
       )}
 
-      <button
-        type="submit"
-        disabled={state === "submitting"}
-        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200"
-        style={{
-          backgroundColor: state === "submitting" ? "var(--border-strong)" : "var(--accent-cyan)",
-          color: state === "submitting" ? "var(--text-muted)" : "#0a0a0f",
-          cursor: state === "submitting" ? "not-allowed" : "pointer",
-          border: "none",
-        }}
-      >
-        <Send size={15} />
-        {state === "submitting" ? "Sending…" : "Send message"}
-      </button>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <button
+          type="submit"
+          disabled={state === "submitting"}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200"
+          style={{
+            backgroundColor: state === "submitting" ? "var(--border-strong)" : "var(--accent-cyan)",
+            color: state === "submitting" ? "var(--text-muted)" : "#0a0a0f",
+            cursor: state === "submitting" ? "not-allowed" : "pointer",
+            border: "none",
+          }}
+        >
+          <Send size={15} />
+          {state === "submitting" ? "Sending…" : "Send message"}
+        </button>
+        {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
+          <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
+            Protected by reCAPTCHA —{" "}
+            <a
+              href="https://policies.google.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Privacy
+            </a>{" "}
+            &{" "}
+            <a
+              href="https://policies.google.com/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Terms
+            </a>
+          </p>
+        )}
+      </div>
     </form>
+  );
+}
+
+function ContactForm() {
+  const captchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
+  if (!captchaKey) {
+    return <ContactFormCore />;
+  }
+
+  return (
+    <GoogleReCaptchaProvider reCaptchaKey={captchaKey} language="en">
+      <ContactFormCore />
+    </GoogleReCaptchaProvider>
   );
 }
 
@@ -236,7 +285,6 @@ export function Contact() {
       className="py-24 px-6 relative overflow-hidden"
       style={{ backgroundColor: "var(--bg-secondary)" }}
     >
-      {/* Background glow */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
@@ -246,7 +294,6 @@ export function Contact() {
       />
 
       <div className="max-w-4xl mx-auto relative z-10">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -266,7 +313,6 @@ export function Contact() {
           </p>
         </motion.div>
 
-        {/* Contact cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
           {links.map((link, i) => (
             <motion.a
@@ -312,7 +358,6 @@ export function Contact() {
           ))}
         </div>
 
-        {/* Contact form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -330,7 +375,6 @@ export function Contact() {
           <ContactForm />
         </motion.div>
 
-        {/* Footer */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

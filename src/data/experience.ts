@@ -20,6 +20,29 @@ export interface ExperienceItem {
 
 export const experience: ExperienceItem[] = [
   {
+    id: "switzerland-freelancer",
+    company: "Freelance — Switzerland",
+    role: "Independent Software Engineer / Consultant",
+    period: "April 2024 – present",
+    periodShort: "2024–now",
+    location: "Switzerland",
+    flag: "🇨🇭",
+    summary: "Independent software engineering and consulting across development, DevOps and product delivery. Working with clients remotely and on-site across Switzerland.",
+    responsibilities: [
+      "Software engineering and DevOps consulting for clients",
+      "Product delivery ownership and Scrum facilitation",
+      "Infrastructure and cloud work (AWS, Docker, Kubernetes)",
+      "Contributing to open-source projects: Beskid programming language (PO/PM) and ipi.io (Scrum Expert, DevOps, Developer)",
+    ],
+    impact: [
+      "Maintained Swiss client relationships and delivery standards across 2+ years of independent work",
+    ],
+    stack: ["Python", "AWS", "Docker", "Kubernetes", "Scrum", "DevOps"],
+    visibility: "public",
+    proofType: "owner-provided",
+    needsApproval: false,
+  },
+  {
     id: "six-digital-exchange",
     company: "SIX Digital Exchange",
     role: "Software Developer & Scrum Master",
@@ -69,29 +92,6 @@ export const experience: ExperienceItem[] = [
     stack: ["C++", "Python", "Bash", "AWS", "Docker", "Kubernetes", "Helm", "Terraform", "GitLab CI", "Grafana", "Prometheus", "MongoDB", "WebSocket", "FIX"],
     visibility: "public",
     proofType: "verified",
-  },
-  {
-    id: "switzerland-freelancer",
-    company: "Freelance — Switzerland",
-    role: "Independent Software Engineer / Consultant",
-    period: "April 2024 – present",
-    periodShort: "2024–now",
-    location: "Switzerland",
-    flag: "🇨🇭",
-    summary: "Independent software engineering and consulting across development, DevOps and product delivery. Working with clients remotely and on-site across Switzerland.",
-    responsibilities: [
-      "Software engineering and DevOps consulting for clients",
-      "Product delivery ownership and Scrum facilitation",
-      "Infrastructure and cloud work (AWS, Docker, Kubernetes)",
-      "Contributing to open-source projects: Beskid programming language (PO/PM) and ipi.io (Scrum Expert, DevOps, Developer)",
-    ],
-    impact: [
-      "Maintained Swiss client relationships and delivery standards across 2+ years of independent work",
-    ],
-    stack: ["Python", "AWS", "Docker", "Kubernetes", "Scrum", "DevOps"],
-    visibility: "public",
-    proofType: "owner-provided",
-    needsApproval: false,
   },
   {
     id: "onespan",

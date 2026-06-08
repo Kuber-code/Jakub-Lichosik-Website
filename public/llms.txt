@@ -1,0 +1,30 @@
+# Jakub Lichosik
+
+> Software Engineer · DevOps / SRE · Scrum Master · PSPO I — based in Katowice, Poland
+
+Personal portfolio and contact hub for Jakub Lichosik. Software engineer with 6+ years of professional experience spanning embedded C++, cloud infrastructure, HFT banking, and blockchain in regulated Swiss finance. Currently freelancing as an independent software engineer and consultant.
+
+## About
+
+- [About](https://lichosik.dev/#about): Background, values, and professional focus
+- [Skills](https://lichosik.dev/#skills): Technical stack — C++, Python, Kotlin, AWS, Kubernetes, Docker, Grafana, Scrum
+
+## Experience
+
+- [Timeline](https://lichosik.dev/#timeline): Career history from 2017 to present — Freelance Switzerland (2024–now), SIX Digital Exchange / blockchain banking (2022–2024), Portofino / HFT crypto DevOps (2021–2022), OneSpan (2021), DisplayLink (2020), RW Swiss Automation (2017–2019)
+
+## Projects
+
+- [Projects](https://lichosik.dev/#projects): Selected engineering work including public GitHub repositories
+
+## Blog
+
+- [Blog](https://lichosik.dev/blog): Technical writing on engineering, infrastructure, and delivery
+
+## Contact
+
+- [Contact](https://lichosik.dev/#contact): Available for software engineering roles, DevOps/SRE positions, freelance engagements, and product/delivery hybrid roles. Languages: Polish, English, German.
+
+## Optional
+
+- [GitHub](https://github.com/Kuber-code): Public repositories and open-source contributions
