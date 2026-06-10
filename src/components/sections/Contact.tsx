@@ -9,34 +9,32 @@ import Script from "next/script";
 declare global {
   interface Window {
     grecaptcha: {
-      enterprise: {
-        ready: (cb: () => void) => void;
-        execute: (siteKey: string, options: { action: string }) => Promise<string>;
-      };
+      ready: (cb: () => void) => void;
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
     };
   }
 }
 
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
-async function getEnterpriseToken(action: string): Promise<string> {
+async function getRecaptchaToken(action: string): Promise<string> {
   if (!RECAPTCHA_SITE_KEY || typeof window === "undefined") return "";
   return new Promise((resolve) => {
     const run = () => {
-      window.grecaptcha.enterprise.ready(async () => {
+      window.grecaptcha.ready(async () => {
         try {
-          const token = await window.grecaptcha.enterprise.execute(RECAPTCHA_SITE_KEY, { action });
+          const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action });
           resolve(token);
         } catch {
           resolve("");
         }
       });
     };
-    if (window.grecaptcha?.enterprise) {
+    if (window.grecaptcha?.ready) {
       run();
     } else {
       const interval = setInterval(() => {
-        if (window.grecaptcha?.enterprise) {
+        if (window.grecaptcha?.ready) {
           clearInterval(interval);
           run();
         }
@@ -102,7 +100,7 @@ function ContactForm() {
     setState("submitting");
     setErrorMsg("");
 
-    const recaptchaToken = await getEnterpriseToken("contact_form");
+    const recaptchaToken = await getRecaptchaToken("contact_form");
 
     try {
       const res = await fetch("/api/contact", {
@@ -295,7 +293,7 @@ export function Contact() {
     >
       {RECAPTCHA_SITE_KEY && (
         <Script
-          src={`https://www.google.com/recaptcha/enterprise.js?render=${RECAPTCHA_SITE_KEY}`}
+          src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`}
           strategy="afterInteractive"
         />
       )}
