@@ -117,7 +117,7 @@ const jsonLd = {
       "@id": "https://lichosik.dev/#profilepage",
       url: "https://lichosik.dev",
       name: "Jakub Lichosik — Software Engineer · DevOps / SRE · Scrum & Delivery",
-      about: { "@id": "https://lichosik.dev/#person" },
+      mainEntity: { "@id": "https://lichosik.dev/#person" },
       isPartOf: { "@id": "https://lichosik.dev/#website" },
     },
   ],
