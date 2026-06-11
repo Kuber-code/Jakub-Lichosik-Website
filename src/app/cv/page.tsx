@@ -322,6 +322,22 @@ export default function CVPage() {
                       />
                       <span className="text-sm" style={{ color: "var(--text-muted)" }}>
                         {cert.name}
+                        {(cert.issuer || cert.year) && (
+                          <span className="ml-1 text-xs" style={{ color: "var(--text-subtle)" }}>
+                            — {[cert.issuer, cert.year].filter(Boolean).join(", ")}
+                          </span>
+                        )}
+                        {cert.url && (
+                          <a
+                            href={cert.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-2 text-xs underline transition-opacity duration-150 hover:opacity-60 no-print"
+                            style={{ color: "var(--accent-cyan)" }}
+                          >
+                            View
+                          </a>
+                        )}
                       </span>
                     </li>
                   ))}

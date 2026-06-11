@@ -10,6 +10,8 @@ export interface EducationItem {
 export interface CertificationItem {
   name: string;
   issuer?: string;
+  year?: number;
+  url?: string;
 }
 
 export interface AcademicActivity {
@@ -40,10 +42,27 @@ export const education: EducationItem[] = [
 ];
 
 export const certifications: CertificationItem[] = [
-  { name: "Professional Scrum Product Owner™ I (PSPO I)" },
-  { name: "AWS for DevOps: Monitoring, Metrics and Logging" },
-  { name: "B1 German FIDE Examination — speech and writing" },
-  { name: "A2 German ECAP Basel — Intensive Course (full time)" },
+  {
+    name: "Professional Scrum Product Owner™ I (PSPO I)",
+    issuer: "Scrum.org",
+    year: 2024,
+    url: "https://drive.google.com/file/d/1unRemSG0EVTHVc8K8_0xogu7i0-qFd7H/view",
+  },
+  {
+    name: "AWS for DevOps: Monitoring, Metrics and Logging",
+    year: 2021,
+    url: "https://drive.google.com/file/d/1Jecr1ueL3B2M6VkXzSkhP7WGk1RcHoxu/view",
+  },
+  {
+    name: "B1 German — FIDE Examination (speech & writing)",
+    year: 2025,
+  },
+  {
+    name: "A2 German — ECAP Basel Intensive Course (full time)",
+    issuer: "ECAP Basel",
+    year: 2025,
+    url: "https://drive.google.com/file/d/154LmhMvwC-GZmKAIKc481lMwO9qxdO4m/view",
+  },
 ];
 
 export const academicActivity: AcademicActivity[] = [

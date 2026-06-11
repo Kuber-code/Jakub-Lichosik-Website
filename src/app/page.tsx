@@ -3,6 +3,7 @@ import { Hero } from "@/components/sections/Hero";
 import { ProofStrip } from "@/components/sections/ProofStrip";
 import { About } from "@/components/sections/About";
 import { Skills } from "@/components/sections/Skills";
+import { Certifications } from "@/components/sections/Certifications";
 import { Timeline } from "@/components/sections/Timeline";
 import { Projects } from "@/components/sections/Projects";
 import { ExtraRoles } from "@/components/sections/ExtraRoles";
@@ -22,6 +23,7 @@ export default async function Home() {
         <ProofStrip />
         <About />
         <Skills />
+        <Certifications />
         <Timeline />
         <Projects githubRepos={githubRepos} />
         <ExtraRoles />
