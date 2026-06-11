@@ -98,7 +98,8 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
-      console.error("[Contact API] Resend error:", error);
+      console.error("[Contact API] Resend error:", JSON.stringify(error));
+      console.error("[Contact API] from:", process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev");
       return NextResponse.json({ error: "Failed to send message." }, { status: 500 });
     }
 
