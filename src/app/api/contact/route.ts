@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
     }
 
-    const recaptchaApiKey = process.env.RECAPTCHA_API_KEY;
+    const recaptchaApiKey = process.env.RECAPTCHA_SECRET_KEY;
     if (recaptchaApiKey) {
       if (!recaptchaToken) {
         return NextResponse.json({ error: "reCAPTCHA verification required." }, { status: 400 });
