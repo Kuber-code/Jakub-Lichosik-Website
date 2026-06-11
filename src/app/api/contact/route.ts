@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const MAX_FIELD_LENGTH = 5000;
 const RECAPTCHA_MIN_SCORE = 0.5;
+const RECAPTCHA_PROJECT_ID = "lichosik-website-1780920501528";
 
 function escapeHtml(str: string): string {
   return str
@@ -12,15 +13,22 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
-async function verifyRecaptcha(token: string, secretKey: string): Promise<boolean> {
-  const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+async function verifyRecaptchaEnterprise(token: string, apiKey: string): Promise<boolean> {
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "";
+  const url = `https://recaptchaenterprise.googleapis.com/v1/projects/${RECAPTCHA_PROJECT_ID}/assessments?key=${encodeURIComponent(apiKey)}`;
+  const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      event: { token, expectedAction: "contact_form", siteKey },
+    }),
   });
-  const data = (await res.json()) as { success: boolean; score?: number; "error-codes"?: string[] };
-  if (!data.success) return false;
-  if (typeof data.score === "number" && data.score < RECAPTCHA_MIN_SCORE) return false;
+  const data = (await res.json()) as {
+    tokenProperties?: { valid: boolean; action?: string };
+    riskAnalysis?: { score: number };
+  };
+  if (!data.tokenProperties?.valid) return false;
+  if (typeof data.riskAnalysis?.score === "number" && data.riskAnalysis.score < RECAPTCHA_MIN_SCORE) return false;
   return true;
 }
 
@@ -52,12 +60,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
     }
 
-    const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
-    if (recaptchaSecret) {
+    const recaptchaApiKey = process.env.RECAPTCHA_API_KEY;
+    if (recaptchaApiKey) {
       if (!recaptchaToken) {
         return NextResponse.json({ error: "reCAPTCHA verification required." }, { status: 400 });
       }
-      const passed = await verifyRecaptcha(recaptchaToken, recaptchaSecret);
+      const passed = await verifyRecaptchaEnterprise(recaptchaToken, recaptchaApiKey);
       if (!passed) {
         return NextResponse.json({ error: "reCAPTCHA check failed. Please try again." }, { status: 400 });
       }
