@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://vercel.live",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://vercel.live https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: blob:",
-  "connect-src 'self' https://api.github.com https://vitals.vercel-insights.com https://va.vercel-scripts.com",
-  "frame-src 'none'",
+  "connect-src 'self' https://api.github.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://www.google.com/recaptcha/ https://recaptchaenterprise.googleapis.com",
+  "frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
